@@ -5,7 +5,9 @@
 
 #include <ozo/asio.h>
 
+#if BOOST_VERSION <= 108300
 #include <boost/asio/handler_invoke_hook.hpp>
+#endif
 
 namespace ozo {
 namespace detail {
