@@ -4,7 +4,12 @@
 #include <boost/asio/executor.hpp>
 #include <boost/asio/strand.hpp>
 #include <boost/asio/steady_timer.hpp>
-#include <boost/asio/posix/stream_descriptor.hpp>
+
+#if defined(_WIN32)
+	#include <ozo/win_stream_descriptor.h>
+#else
+	#include <boost/asio/posix/stream_descriptor.hpp>
+#endif
 
 namespace ozo {
 
@@ -105,12 +110,18 @@ struct connection_stream {
 
 template <>
 struct connection_stream<asio::io_context::executor_type> {
+#ifdef _WIN32
+    using type = ozo::detail::win_stream_descriptor;
+#else
     using type = asio::posix::stream_descriptor;
+#endif
 
-    static type get(const asio::io_context::executor_type& ex, type::native_handle_type fd) {
-        return type{ex.context(), fd};
+    // --- конструируем объект, когда у нас уже есть дескриптор ---
+    static type get(const asio::io_context::executor_type& ex,
+                    type::native_handle_type native) {
+        return type{ex.context(), native};
     }
-
+    // --- «пустой» конструктор (будущий assign()) -----------------
     static type get(const asio::io_context::executor_type& ex) {
         return type{ex.context()};
     }

@@ -13,7 +13,6 @@
 #include <ozo/detail/functional.h>
 
 #include <boost/asio/dispatch.hpp>
-#include <boost/asio/posix/stream_descriptor.hpp>
 
 namespace ozo {
 
@@ -262,7 +261,7 @@ public:
 
     ~connection();
 private:
-    using stream_type = asio::posix::stream_descriptor;
+    using stream_type = ozo::detail::connection_stream<asio::io_context::executor_type>::type;
 
     ozo::pg::conn handle_;
     io_context* io_ = nullptr;
