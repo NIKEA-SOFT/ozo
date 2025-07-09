@@ -109,18 +109,18 @@ public:
 private:
     static constexpr auto binary_format = 1;
 
-    struct interface {
+    struct binary_interface {
         virtual const char* text() const noexcept = 0;
         virtual const oid_t* types() const noexcept = 0;
         virtual const int* formats() const noexcept = 0;
         virtual const int* lengths() const noexcept = 0;
         virtual const char* const* values() const noexcept = 0;
         virtual std::ptrdiff_t params_count() const noexcept = 0;
-        virtual ~interface() = default;
+        virtual ~binary_interface() = default;
     };
 
     template <class Text, class Params, class OidMap, class Allocator = std::allocator<char>>
-    struct impl_type final : interface {
+    struct impl_type final : binary_interface {
         static_assert(ozo::HanaSequence<Params>, "Params should be Hana.Sequence");
         static_assert(ozo::OidMap<OidMap>, "OidMap should model ozo::OidMap");
         static_assert(ozo::QueryText<Text>, "Text should model ozo::QueryText concept");
@@ -196,7 +196,7 @@ private:
         }
     };
 
-    std::shared_ptr<const interface> impl;
+    std::shared_ptr<const binary_interface> impl;
 };
 
 namespace detail {
